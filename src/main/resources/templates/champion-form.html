@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Champion - Insertar/Actualizar')"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+    <br>
+    <h1 th:text="${champion.id == null} ? #{'msg.champion-form.add'} : #{'msg.champion-form.edit'}"></h1>
+
+    <!-- Mostrar un mensaje de error si existe -->
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Formulario para crear o editar campeón -->
+    <form th:action="${champion.id == null} ? @{/champions/insert} : @{/champions/update}"
+          th:object="${champion}" method="post" class="mt-4">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="code" class="form-label" th:text="#{msg.champion-form.code}"></label>
+            <input type="text" th:field="*{code}" id="code" class="form-control" />
+            <div th:if="${#fields.hasErrors('code')}" class="text-danger" th:errors="*{code}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="name" class="form-label" th:text="#{msg.champion-form.name}"></label>
+            <input type="text" th:field="*{name}" id="name" class="form-control" />
+            <div th:if="${#fields.hasErrors('name')}" class="text-danger" th:errors="*{name}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="rol" class="form-label" th:text="#{msg.champion-form.rol}"></label>
+            <input type="text" th:field="*{rol}" id="rol" class="form-control" />
+            <div th:if="${#fields.hasErrors('rol')}" class="text-danger" th:errors="*{rol}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="${champion.id == null} ? #{'msg.champion-form.add'} : #{'msg.champion-form.update'}"></button>
+    </form>
+
+    <!-- Volver a la lista de campeones -->
+    <a href="#" th:href="@{/champions}" class="btn btn-secondary mt-3" th:text="#{msg.champion-form.returnback}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>

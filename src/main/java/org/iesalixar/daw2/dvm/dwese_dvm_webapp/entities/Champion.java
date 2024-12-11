@@ -28,29 +28,19 @@ public class Champion {
     private Long id;
 
     @NotEmpty(message = "{msg.champion.code.notEmpty}")
-    @Size(max = 2, message = "{msg.champion.code.size}")
-    @Column(name = "code", nullable = false, length = 2)
+    @Size(max = 50, message = "{msg.champion.code.size}")
+    @Column(name = "code", nullable = false)
     private String code;
 
     @NotEmpty(message = "{msg.champion.name.notEmpty}")
-    @Size(max = 2, message = "{msg.champion.name.size}")
-    @Column(name = "name", nullable = false, length = 2)
+    @Size(max = 255, message = "{msg.champion.name.size}")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @NotEmpty(message = "{msg.champion.rol.notEmpty}")
-    @Size(max = 2, message = "{msg.champion.rol.size}")
-    @Column(name = "rol", nullable = false, length = 2)
+    @Size(max = 255, message = "{msg.champion.rol.size}")
+    @Column(name = "rol", nullable = false)
     private String rol;
-
-    @NotEmpty(message = "{msg.champion.lore.notEmpty}")
-    @Size(max = 2, message = "{msg.champion.lore.size}")
-    @Column(name = "lore", nullable = false, length = 2)
-    private String lore;
-
-    /*@NotEmpty(message = "{msg.champion.image.notEmpty}")
-    @Size(max = 100, message = "{msg.champion.image.size}")
-    @Column(name = "image", nullable = false, length = 100)
-    private Integer image;*/
 
     // Relación uno a muchos con la entidad Ability.
     // Un campeón puede tener muchas habilidades.
@@ -64,13 +54,11 @@ public class Champion {
      * @param code Código del campeón.
      * @param name Nombre del campeón.
      * @param rol Rol/Posición del campeón.
-     * @param lore Historia del campeón.
      */
 
-    public Champion(String code, String name, String rol, String lore) {
+    public Champion(String code, String name, String rol) {
         this.code = code;
         this.name = name;
         this.rol = rol;
-        this.lore = lore;
     }
 }

@@ -1,14 +1,17 @@
 package org.iesalixar.daw2.dvm.dwese_dvm_webapp.controllers;
 
 import jakarta.validation.Valid;
-import org.iesalixar.daw2.dvm.dwese_ticket_logger_webapp.entities.Region;
-import org.iesalixar.daw2.dvm.dwese_ticket_logger_webapp.repositories.ProvinceRepository;
-import org.iesalixar.daw2.dvm.dwese_ticket_logger_webapp.repositories.RegionRepository;
-import org.iesalixar.daw2.dvm.dwese_ticket_logger_webapp.entities.Province;
+import org.iesalixar.daw2.dvm.dwese_dvm_webapp.entities.Champion;
+import org.iesalixar.daw2.dvm.dwese_dvm_webapp.repositories.AbilityRepository;
+import org.iesalixar.daw2.dvm.dwese_dvm_webapp.repositories.ChampionRepository;
+import org.iesalixar.daw2.dvm.dwese_dvm_webapp.entities.Ability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,146 +24,146 @@ import java.util.Optional;
 
 
 /**
- * Controlador que maneja las operaciones CRUD para la entidad `Province`.
- * Utiliza `ProvinceDAO` para interactuar con la base de datos.
+ * Controlador que maneja las operaciones CRUD para la entidad `Ability`.
+ * Utiliza `AbilityDAO` para interactuar con la base de datos.
  */
 @Controller
-@RequestMapping("/provinces")
-public class ProvinceController {
+@RequestMapping("/abilities")
+public class AbilityController {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(ProvinceController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbilityController.class);
 
 
-    // DAO para gestionar las operaciones de las provincias en la base de datos
+    // DAO para gestionar las operaciones de las habilidades en la base de datos
     @Autowired
-    private ProvinceRepository provinceRepository;
+    private AbilityRepository abilityRepository;
     @Autowired
     private MessageSource messageSource;
     @Autowired
-    private RegionRepository regionRepository;
+    private ChampionRepository championRepository;
 
 
     /**
-     * Lista todas las provincias y las pasa como atributo al modelo para que sean
-     * accesibles en la vista `province.html`.
+     * Lista todas las habilidades y las pasa como atributo al modelo para que sean
+     * accesibles en la vista `ability.html`.
      *
      * @param model Objeto del modelo para pasar datos a la vista.
-     * @return El nombre de la plantilla Thymeleaf para renderizar la lista de provincias.
+     * @return El nombre de la plantilla Thymeleaf para renderizar la lista de habilidades.
      */
     @GetMapping
-    public String listProvinces(Model model) {
-        logger.info("Solicitando la lista de todas las provincias...");
-        List<Province> listProvinces = null;
-        listProvinces = provinceRepository.findAll();
-        logger.info("Se han cargado {} provincias.", listProvinces.size());
-        model.addAttribute("listProvinces", listProvinces); // Pasar la lista de provincias al modelo
-        return "province"; // Nombre de la plantilla Thymeleaf a renderizar
+    public String listAbilities(Model model) {
+        logger.info("Solicitando la lista de todas las habilidades...");
+        List<Ability> listAbilities = null;
+        listAbilities = abilityRepository.findAll();
+        logger.info("Se han cargado {} habilidades.", listAbilities.size());
+        model.addAttribute("listAbilities", listAbilities); // Pasar la lista de habilidades al modelo
+        return "ability"; // Nombre de la plantilla Thymeleaf a renderizar
     }
 
 
     /**
-     * Muestra el formulario para crear una nueva provincia.
+     * Muestra el formulario para crear una nueva habilidad.
      *
      * @param model Modelo para pasar datos a la vista.
      * @return El nombre de la plantilla Thymeleaf para el formulario.
      */
     @GetMapping("/new")
     public String showNewForm(Model model) {
-        logger.info("Mostrando formulario para nueva provincia.");
-        model.addAttribute("province", new Province()); // Crear un nuevo objeto Province
-        model.addAttribute("regions", regionRepository.findAll()); // Lista de regiones
-        return "province-form"; // Nombre de la plantilla Thymeleaf para el formulario
+        logger.info("Mostrando formulario para nueva habilidad.");
+        model.addAttribute("ability", new Ability()); // Crear un nuevo objeto Ability
+        model.addAttribute("champions", championRepository.findAll()); // Lista de championes
+        return "ability-form"; // Nombre de la plantilla Thymeleaf para el formulario
     }
 
 
     /**
-     * Muestra el formulario para editar una provincia existente.
+     * Muestra el formulario para editar una habilidad existente.
      *
-     * @param id    ID de la provincia a editar.
+     * @param id    ID de la habilidad a editar.
      * @param model Modelo para pasar datos a la vista.
      * @return El nombre de la plantilla Thymeleaf para el formulario.
      */
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model) {
-        logger.info("Mostrando formulario de edición para la provincia con ID {}", id);
-        Optional<Province> province = provinceRepository.findById(id);
-        List<Region> regions = regionRepository.findAll();
-        model.addAttribute("province", province.get());
-        model.addAttribute("regions", regions); // Lista de regiones
-        return "province-form"; // Nombre de la plantilla Thymeleaf para el formulario
+        logger.info("Mostrando formulario de edición para la habilidad con ID {}", id);
+        Optional<Ability> ability = abilityRepository.findById(id);
+        List<Champion> champions = championRepository.findAll();
+        model.addAttribute("ability", ability.get());
+        model.addAttribute("champions", champions); // Lista de championes
+        return "ability-form"; // Nombre de la plantilla Thymeleaf para el formulario
     }
 
 
     /**
-     * Inserta una nueva provincia en la base de datos.
+     * Inserta una nueva habilidad en la base de datos.
      *
-     * @param province              Objeto que contiene los datos del formulario.
+     * @param ability              Objeto que contiene los datos del formulario.
      * @param redirectAttributes  Atributos para mensajes flash de redirección.
-     * @return Redirección a la lista de provincias.
+     * @return Redirección a la lista de habilidades.
      */
     @PostMapping("/insert")
-    public String insertProvince(@Valid @ModelAttribute("province") Province province, BindingResult result, RedirectAttributes redirectAttributes, Model model, Locale locale) {
-        logger.info("Insertando nueva provincia con código {}", province.getCode());
+    public String insertAbility(@Valid @ModelAttribute("ability") Ability ability, BindingResult result, RedirectAttributes redirectAttributes, Model model, Locale locale) {
+        logger.info("Insertando nueva habilidad con código {}", ability.getCode());
         if (result.hasErrors()) {
-            model.addAttribute("regions", regionRepository.findAll()); // Lista de regiones
-            return "province-form";  // Devuelve el formulario para mostrar los errores de validación
+            model.addAttribute("champions", championRepository.findAll()); // Lista de championes
+            return "ability-form";  // Devuelve el formulario para mostrar los errores de validación
         }
-        if (provinceRepository.existsByCode(province.getCode())) {
-            logger.warn("El código de la provincia {} ya existe.", province.getCode());
-            String errorMessage = messageSource.getMessage("msg.province-controller.insert.codeExist", null, locale);
+        if (abilityRepository.existsByCode(ability.getCode())) {
+            logger.warn("El código de la habilidad {} ya existe.", ability.getCode());
+            String errorMessage = messageSource.getMessage("msg.ability-controller.insert.codeExist", null, locale);
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
-            return "redirect:/provinces/new";
+            return "redirect:/abilities/new";
         }
-        provinceRepository.save(province);
-        logger.info("Provincia {} insertada con éxito.", province.getCode());
-        return "redirect:/provinces"; // Redirigir a la lista de provincias
+        abilityRepository.save(ability);
+        logger.info("Habilidad {} insertada con éxito.", ability.getCode());
+        return "redirect:/abilities"; // Redirigir a la lista de habilidades
     }
 
 
     /**
-     * Actualiza una provincia existente en la base de datos.
+     * Actualiza una habilidad existente en la base de datos.
      *
-     * @param province              Objeto que contiene los datos del formulario.
+     * @param ability              Objeto que contiene los datos del formulario.
      * @param redirectAttributes  Atributos para mensajes flash de redirección.
-     * @return Redirección a la lista de provincias.
+     * @return Redirección a la lista de habilidades.
      */
     @PostMapping("/update")
-    public String updateProvince(@Valid @ModelAttribute("province") Province province, BindingResult result, RedirectAttributes redirectAttributes, Model model, Locale locale) {
-        logger.info("Actualizando provincia con ID {}", province.getId());
+    public String updateAbility(@Valid @ModelAttribute("ability") Ability ability, BindingResult result, RedirectAttributes redirectAttributes, Model model, Locale locale) {
+        logger.info("Actualizando habilidad con ID {}", ability.getId());
         if (result.hasErrors()) {
-            model.addAttribute("regions", regionRepository.findAll()); // Lista de regiones
-            return "province-form";  // Devuelve el formulario para mostrar los errores de validación
+            model.addAttribute("champions", championRepository.findAll()); // Lista de championes
+            return "ability-form";  // Devuelve el formulario para mostrar los errores de validación
         }
-        if (provinceRepository.existsProvinceByCodeAndNotId(province.getCode(), province.getId())) {
-            logger.warn("El código de la provincia {} ya existe para otra provincia.", province.getCode());
-            String errorMessage = messageSource.getMessage("msg.province-controller.update.codeExist", null, locale);
+        if (abilityRepository.existsAbilityByCodeAndNotId(ability.getCode(), ability.getId())) {
+            logger.warn("El código de la habilidad {} ya existe para otra habilidad.", ability.getCode());
+            String errorMessage = messageSource.getMessage("msg.ability-controller.update.codeExist", null, locale);
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
-            return "redirect:/provinces/edit?id=" + province.getId();
+            return "redirect:/abilities/edit?id=" + ability.getId();
         }
-        provinceRepository.save(province);
-        logger.info("Provincia con ID {} actualizada con éxito.", province.getId());
-        return "redirect:/provinces"; // Redirigir a la lista de provincias
+        abilityRepository.save(ability);
+        logger.info("Habilidad con ID {} actualizada con éxito.", ability.getId());
+        return "redirect:/abilities"; // Redirigir a la lista de habilidades
     }
 
 
     /**
-     * Elimina una provincia de la base de datos.
+     * Elimina una habilidad de la base de datos.
      *
-     * @param id                 ID de la provincia a eliminar.
+     * @param id                 ID de la habilidad a eliminar.
      * @param redirectAttributes Atributos para mensajes flash de redirección.
-     * @return Redirección a la lista de provincias.
+     * @return Redirección a la lista de habilidades.
      */
     @PostMapping("/delete")
-    public String deleteProvince(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
-        logger.info("Eliminando provincia con ID {}", id);
+    public String deleteAbility(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        logger.info("Eliminando habilidad con ID {}", id);
         try {
-            provinceRepository.deleteById(id);
+            abilityRepository.deleteById(id);
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "msg.province-controller.delete.error");
-            return "redirect:/provinces";
+            redirectAttributes.addFlashAttribute("errorMessage", "msg.ability-controller.delete.error");
+            return "redirect:/abilities";
         }
-        logger.info("Provincia con ID {} eliminada con éxito.", id);
-        return "redirect:/provinces"; // Redirigir a la lista de provincias
+        logger.info("Habilidad con ID {} eliminada con éxito.", id);
+        return "redirect:/abilities"; // Redirigir a la lista de habilidades
     }
 }

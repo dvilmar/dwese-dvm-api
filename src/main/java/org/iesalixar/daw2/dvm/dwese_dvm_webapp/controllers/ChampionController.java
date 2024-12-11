@@ -1,12 +1,16 @@
 package org.iesalixar.daw2.dvm.dwese_dvm_webapp.controllers;
 
 import jakarta.validation.Valid;
-import org.iesalixar.daw2.dvm.dwese_ticket_logger_webapp.repositories.RegionRepository;
-import org.iesalixar.daw2.dvm.dwese_ticket_logger_webapp.entities.Region;
+import org.iesalixar.daw2.dvm.dwese_dvm_webapp.repositories.ChampionRepository;
+import org.iesalixar.daw2.dvm.dwese_dvm_webapp.entities.Champion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,134 +24,139 @@ import java.util.Optional;
 
 
 /**
- * Controlador que maneja las operaciones CRUD para la entidad `Region`.
- * Utiliza `RegionDAO` para interactuar con la base de datos.
+ * Controlador que maneja las operaciones CRUD para la entidad `Champion`.
+ * Utiliza `ChampionDAO` para interactuar con la base de datos.
  */
 @Controller
-@RequestMapping("/regions")
-public class RegionController {
+@RequestMapping("/champions")
+public class ChampionController {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(RegionController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChampionController.class);
 
 
-    // DAO para gestionar las operaciones de las regiones en la base de datos
+    // DAO para gestionar las operaciones de los campeones en la base de datos
     @Autowired
-    private RegionRepository regionRepository;
+    private ChampionRepository championRepository;
     @Autowired
     private MessageSource messageSource;
 
 
     /**
-     * Lista todas las regiones y las pasa como atributo al modelo para que sean
-     * accesibles en la vista `region.html`.
+     * Lista todos los campeones y las pasa como atributo al modelo para que sean
+     * accesibles en la vista `champion.html`.
      *
      * @param model Objeto del modelo para pasar datos a la vista.
-     * @return El nombre de la plantilla Thymeleaf para renderizar la lista de regiones.
+     * @return El nombre de la plantilla Thymeleaf para renderizar la lista de campeones.
      */
     @GetMapping
-    public String listRegions(Model model) {
-        logger.info("Solicitando la lista de todas las regiones...");
-        List<Region> listRegions = null;
-        listRegions = regionRepository.findAll();
-        logger.info("Se han cargado {} regiones.", listRegions.size());
-        model.addAttribute("listRegions", listRegions); // Pasar la lista de regiones al modelo
-        return "region"; // Nombre de la plantilla Thymeleaf a renderizar
+    public String listChampions(Model model) {
+        logger.info("Solicitando la lista de todos los campeones...");
+        List<Champion> listChampions = null;
+        listChampions = championRepository.findAll();
+        logger.info("Se han cargado {} campeones.", listChampions.size());
+        model.addAttribute("listChampions", listChampions); // Pasar la lista de campeones al modelo
+        return "champion"; // Nombre de la plantilla Thymeleaf a renderizar
     }
 
 
     /**
-     * Muestra el formulario para crear una nueva región.
+     * Muestra el formulario para crear una nueva .
      *
      * @param model Modelo para pasar datos a la vista.
      * @return El nombre de la plantilla Thymeleaf para el formulario.
      */
     @GetMapping("/new")
     public String showNewForm(Model model) {
-        logger.info("Mostrando formulario para nueva región.");
-        model.addAttribute("region", new Region()); // Crear un nuevo objeto Region
-        return "region-form"; // Nombre de la plantilla Thymeleaf para el formulario
+        logger.info("Mostrando formulario para nueva .");
+        model.addAttribute("champion", new Champion()); // Crear un nuevo objeto Champion
+        return "champion-form"; // Nombre de la plantilla Thymeleaf para el formulario
     }
 
 
     /**
-     * Muestra el formulario para editar una región existente.
+     * Muestra el formulario para editar un campeón existente.
      *
-     * @param id    ID de la región a editar.
+     * @param id    ID del campeón a editar.
      * @param model Modelo para pasar datos a la vista.
      * @return El nombre de la plantilla Thymeleaf para el formulario.
      */
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model) {
-        logger.info("Mostrando formulario de edición para la región con ID {}", id);
-        Optional<Region> region = regionRepository.findById(id);
-        model.addAttribute("region", region.get());
-        return "region-form"; // Nombre de la plantilla Thymeleaf para el formulario
+        logger.info("Mostrando formulario de edición para el campeón con ID {}", id);
+        Optional<Champion> champion = championRepository.findById(id);
+        model.addAttribute("champion", champion.get());
+        return "champion-form"; // Nombre de la plantilla Thymeleaf para el formulario
     }
 
 
     /**
-     * Inserta una nueva región en la base de datos.
+     * Inserta una nueva campeón en la base de datos.
      *
-     * @param region              Objeto que contiene los datos del formulario.
+     * @param champion              Objeto que contiene los datos del formulario.
      * @param redirectAttributes  Atributos para mensajes flash de redirección.
-     * @return Redirección a la lista de regiones.
+     * @return Redirección a la lista de campeones.
      */
     @PostMapping("/insert")
-    public String insertRegion(@Valid @ModelAttribute("region") Region region, BindingResult result, RedirectAttributes redirectAttributes, Locale locale) {
-        logger.info("Insertando nueva región con código {}", region.getCode());
+    public String insertChampion(@Valid @ModelAttribute("champion") Champion champion, BindingResult result, RedirectAttributes redirectAttributes, Locale locale) {
+        logger.info("Insertando nueva campeón con código {}", champion.getCode());
         if (result.hasErrors()) {
-            return "region-form";  // Devuelve el formulario para mostrar los errores de validación
+            return "champion-form";  // Devuelve el formulario para mostrar los errores de validación
         }
-        if (regionRepository.existsByCode(region.getCode())) {
-            logger.warn("El código de la región {} ya existe.", region.getCode());
-            String errorMessage = messageSource.getMessage("msg.region-controller.insert.codeExist", null, locale);
+        if (championRepository.existsByCode(champion.getCode())) {
+            logger.warn("El código del campeón {} ya existe.", champion.getCode());
+            String errorMessage = messageSource.getMessage("msg.champion-controller.insert.codeExist", null, locale);
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
-            return "redirect:/regions/new";
+            return "redirect:/champions/new";
         }
-        regionRepository.save(region);
-        logger.info("Región {} insertada con éxito.", region.getCode());
-        return "redirect:/regions"; // Redirigir a la lista de regiones
+        championRepository.save(champion);
+        logger.info("Campeón {} insertada con éxito.", champion.getCode());
+        return "redirect:/champions"; // Redirigir a la lista de campeones
     }
 
 
     /**
-     * Actualiza una región existente en la base de datos.
+     * Actualiza un campeón existente en la base de datos.
      *
-     * @param region              Objeto que contiene los datos del formulario.
+     * @param champion              Objeto que contiene los datos del formulario.
      * @param redirectAttributes  Atributos para mensajes flash de redirección.
-     * @return Redirección a la lista de regiones.
+     * @return Redirección a la lista de campeones.
      */
     @PostMapping("/update")
-    public String updateRegion(@Valid @ModelAttribute("region") Region region, BindingResult result, RedirectAttributes redirectAttributes, Locale locale) {
-        logger.info("Actualizando región con ID {}", region.getId());
+    public String updateChampion(@Valid @ModelAttribute("champion") Champion champion, BindingResult result, RedirectAttributes redirectAttributes, Locale locale) {
+        logger.info("Actualizando campeón con ID {}", champion.getId());
         if (result.hasErrors()) {
-            return "region-form";  // Devuelve el formulario para mostrar los errores de validación
+            return "champion-form";  // Devuelve el formulario para mostrar los errores de validación
         }
-        if (regionRepository.existsRegionByCodeAndNotId(region.getCode(), region.getId())) {
-            logger.warn("El código de la región {} ya existe para otra región.", region.getCode());
-            String errorMessage = messageSource.getMessage("msg.region-controller.update.codeExist", null, locale);
+        if (championRepository.existsChampionByCodeAndNotId(champion.getCode(), champion.getId())) {
+            logger.warn("El código del campeón {} ya existe para otra campeón.", champion.getCode());
+            String errorMessage = messageSource.getMessage("msg.champion-controller.update.codeExist", null, locale);
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
-            return "redirect:/regions/edit?id=" + region.getId();
+            return "redirect:/champions/edit?id=" + champion.getId();
         }
-        regionRepository.save(region);
-        logger.info("Región con ID {} actualizada con éxito.", region.getId());
-        return "redirect:/regions"; // Redirigir a la lista de regiones
+        championRepository.save(champion);
+        logger.info("Campeón con ID {} actualizada con éxito.", champion.getId());
+        return "redirect:/champions"; // Redirigir a la lista de campeones
     }
 
 
     /**
-     * Elimina una región de la base de datos.
+     * Elimina un campeón de la base de datos.
      *
-     * @param id                 ID de la región a eliminar.
+     * @param id                 ID del campeón a eliminar.
      * @param redirectAttributes Atributos para mensajes flash de redirección.
-     * @return Redirección a la lista de regiones.
+     * @return Redirección a la lista de campeones.
      */
     @PostMapping("/delete")
-    public String deleteRegion(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
-        logger.info("Eliminando región con ID {}", id);
-        regionRepository.deleteById(id);
-        logger.info("Región con ID {} eliminada con éxito.", id);
-        return "redirect:/regions"; // Redirigir a la lista de regiones
+    public String deleteChampion(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        logger.info("Eliminando campeón con ID {}", id);
+        try {
+            championRepository.deleteById(id);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "msg.champion-controller.delete.error");
+            return "redirect:/abilities";
+        }
+        logger.info("Campeón con ID {} eliminada con éxito.", id);
+        return "redirect:/champions"; // Redirigir a la lista de campeones
     }
 }
