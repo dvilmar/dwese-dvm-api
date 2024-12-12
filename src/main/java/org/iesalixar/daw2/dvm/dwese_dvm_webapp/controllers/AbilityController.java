@@ -57,7 +57,7 @@ public class AbilityController {
         List<Ability> listAbilities = null;
         listAbilities = abilityRepository.findAll();
         logger.info("Se han cargado {} habilidades.", listAbilities.size());
-        model.addAttribute("listAbilities", listAbilities); // Pasar la lista de habilidades al modelo
+        model.addAttribute("abilities", listAbilities); // Pasar la lista de habilidades al modelo
         return "ability"; // Nombre de la plantilla Thymeleaf a renderizar
     }
 
@@ -88,9 +88,12 @@ public class AbilityController {
     public String showEditForm(@RequestParam("id") Long id, Model model) {
         logger.info("Mostrando formulario de edición para la habilidad con ID {}", id);
         Optional<Ability> ability = abilityRepository.findById(id);
-        List<Champion> champions = championRepository.findAll();
-        model.addAttribute("ability", ability.get());
-        model.addAttribute("champions", champions); // Lista de championes
+        if (ability.isPresent()) {
+            model.addAttribute("ability", ability.get());  // Cargar la habilidad a editar
+            model.addAttribute("champions", championRepository.findAll()); // Lista de campeones
+        } else {
+            logger.warn("No se encontró la habilidad con ID {}", id);
+        }
         return "ability-form"; // Nombre de la plantilla Thymeleaf para el formulario
     }
 

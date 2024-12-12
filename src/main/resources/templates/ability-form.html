@@ -21,10 +21,14 @@
     <!-- Selección de Campeón -->
     <div class="mb-3">
       <label for="champion" class="form-label" th:text="#{msg.ability-form.champion}"></label>
-      <select th:field="*{champion.id}" id="champion" class="form-control">
-        <option th:each="champion : ${listChampions}" th:value="${champion.id}" th:text="${champion.name}"></option>
+      <select th:field="*{champion.id}" id="champion" class="form-select">
+        <option th:each="champion : ${champions}"
+                th:value="${champion.id}"
+                th:text="${champion.name}"
+                th:selected="${ability.champion.id == champion.id}">
+        </option>
       </select>
-      <div th:if="${#fields.hasErrors('champion')}" class="text-danger" th:errors="*{champion}"></div>
+
     </div>
 
     <div class="mb-3">
@@ -64,6 +68,7 @@
   <a href="#" th:href="@{/abilities}" class="btn btn-secondary mt-3" th:text="#{msg.ability-form.returnback}"></a>
 </main>
 
+<br>
 <!-- Incluir el fragmento del footer -->
 <footer th:replace="fragments/footer :: footer"></footer>
 

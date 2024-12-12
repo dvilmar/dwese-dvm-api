@@ -1,6 +1,7 @@
 package org.iesalixar.daw2.dvm.dwese_dvm_webapp.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -41,18 +42,18 @@ public class Ability {
     @Column(name = "type", nullable = false)
     private String type;
 
-    @NotEmpty(message = "{msg.ability.cost.notEmpty}")
-    @Size(max = 5, message = "{msg.ability.cost.size}")
+    @NotNull(message = "{msg.ability.cost.notNull}")
+    @Max(value = 999, message = "{msg.ability.cooldown.max}")
     @Column(name = "cost", nullable = false)
     private Integer cost;
 
-    @NotEmpty(message = "{msg.ability.cooldown.notEmpty}")
-    @Size(max = 5, message = "{msg.ability.cooldown.size}")
+    @NotNull(message = "{msg.ability.cooldown.notNull}")
+    @Max(value = 999, message = "{msg.ability.cooldown.max}")
     @Column(name = "cooldown", nullable = false)
     private Integer cooldown;
 
     // Relación con la entidad 'Champion', representando el campeón al que pertenece la habilidad.
-    @NotNull(message = "{msg.province.region.notNull}")
+    @NotNull(message = "{msg.ability.champion.notNull}")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "champion_id", nullable = false)
     private Champion champion;

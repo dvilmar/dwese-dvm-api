@@ -5,9 +5,11 @@
 <header th:replace="fragments/header :: header"></header>
 <main class="flex-shrink-0">
   <div class="container">
+    <br>
     <h1 th:text="${errorCode}">GENERIC</h1>
-    <p class="lead" th:text="${errorMessage}">Ha ocurrido un error un error</p>
+    <p class="lead" th:text="${errorMessage}">Ha ocurrido un error desconocido.</p>
     <a href="/" class="btn btn-primary">Volver al inicio</a>
+    <br>
   </div>
 </main>
 <footer th:replace="fragments/footer :: footer"></footer>

@@ -19,9 +19,8 @@
   <table class="table table-bordered mt-3">
     <thead>
     <tr>
-      <th th:text="#{msg.ability.id}"></th>
-      <th th:text="#{msg.ability.name}"></th>
       <th th:text="#{msg.ability.code}"></th>
+      <th th:text="#{msg.ability.name}"></th>
       <th th:text="#{msg.ability.cooldown}"></th>
       <th th:text="#{msg.ability.cost}"></th>
       <th th:text="#{msg.ability.type}"></th>
@@ -29,10 +28,9 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="ability : ${listAbilities}">
-      <td th:text="${ability.id}"></td>
-      <td th:text="${ability.name}"></td>
+    <tr th:each="ability : ${abilities}">
       <td th:text="${ability.code}"></td>
+      <td th:text="${ability.name}"></td>
       <td th:text="${ability.cooldown}"></td>
       <td th:text="${ability.cost}"></td>
       <td th:text="${ability.type}"></td>

@@ -31,16 +31,13 @@ import java.util.Optional;
 @RequestMapping("/champions")
 public class ChampionController {
 
-
     private static final Logger logger = LoggerFactory.getLogger(ChampionController.class);
-
 
     // DAO para gestionar las operaciones de los campeones en la base de datos
     @Autowired
     private ChampionRepository championRepository;
     @Autowired
     private MessageSource messageSource;
-
 
     /**
      * Lista todos los campeones y las pasa como atributo al modelo para que sean
@@ -55,10 +52,9 @@ public class ChampionController {
         List<Champion> listChampions = null;
         listChampions = championRepository.findAll();
         logger.info("Se han cargado {} campeones.", listChampions.size());
-        model.addAttribute("listChampions", listChampions); // Pasar la lista de campeones al modelo
+        model.addAttribute("champions", listChampions); // Pasar la lista de campeones al modelo
         return "champion"; // Nombre de la plantilla Thymeleaf a renderizar
     }
-
 
     /**
      * Muestra el formulario para crear una nueva .
@@ -72,7 +68,6 @@ public class ChampionController {
         model.addAttribute("champion", new Champion()); // Crear un nuevo objeto Champion
         return "champion-form"; // Nombre de la plantilla Thymeleaf para el formulario
     }
-
 
     /**
      * Muestra el formulario para editar un campeón existente.
@@ -88,7 +83,6 @@ public class ChampionController {
         model.addAttribute("champion", champion.get());
         return "champion-form"; // Nombre de la plantilla Thymeleaf para el formulario
     }
-
 
     /**
      * Inserta una nueva campeón en la base de datos.
