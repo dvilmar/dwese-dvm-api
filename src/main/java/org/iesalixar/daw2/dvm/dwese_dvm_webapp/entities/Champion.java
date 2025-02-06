@@ -40,7 +40,7 @@ public class Champion {
     @NotEmpty(message = "{msg.champion.rol.notEmpty}")
     @Size(max = 255, message = "{msg.champion.rol.size}")
     @Column(name = "rol", nullable = false)
-    private String rol;
+    private String role;
 
     // Relación uno a muchos con la entidad Ability.
     // Un campeón puede tener muchas habilidades.
@@ -53,12 +53,12 @@ public class Champion {
      * (por ejemplo, antes de insertar el campeón en la base de datos, donde el 'id' es autogenerado).
      * @param code Código del campeón.
      * @param name Nombre del campeón.
-     * @param rol Rol/Posición del campeón.
+     * @param role Rol/Posición del campeón.
      */
 
-    public Champion(String code, String name, String rol) {
+    public Champion(String code, String name, String role) {
         this.code = code;
         this.name = name;
-        this.rol = rol;
+        this.role = role;
     }
 }
