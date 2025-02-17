@@ -44,13 +44,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin").hasRole("ADMIN")
 
                         .requestMatchers("/api/v1/authenticate", "/api/v1/register").permitAll()
+                        .requestMatchers(
+                                "/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {

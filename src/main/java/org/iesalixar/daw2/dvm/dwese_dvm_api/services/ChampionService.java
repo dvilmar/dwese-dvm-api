@@ -1,7 +1,9 @@
 package org.iesalixar.daw2.dvm.dwese_dvm_api.services;
 
+import org.iesalixar.daw2.dvm.dwese_dvm_api.dtos.AbilityDTO;
 import org.iesalixar.daw2.dvm.dwese_dvm_api.dtos.ChampionCreateDTO;
 import org.iesalixar.daw2.dvm.dwese_dvm_api.dtos.ChampionDTO;
+import org.iesalixar.daw2.dvm.dwese_dvm_api.entities.Ability;
 import org.iesalixar.daw2.dvm.dwese_dvm_api.entities.Champion;
 import org.iesalixar.daw2.dvm.dwese_dvm_api.mappers.ChampionMapper;
 import org.iesalixar.daw2.dvm.dwese_dvm_api.repositories.ChampionRepository;
@@ -9,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,16 +33,14 @@ public class ChampionService {
     @Autowired
     private MessageSource messageSource;
 
-    public List<ChampionDTO> getAllChampions() {
-        logger.info("Solicitando todos los campeones...");
+    public Page<ChampionDTO> getAllChampions(Pageable pageable) {
+        logger.info("Solicitando todas las habilidades...", pageable.getPageNumber(), pageable.getPageSize());
         try {
-            List<Champion> champions = championRepository.findAll();
-            logger.info("Se han encontrado {} campeones.", champions.size());
-            return champions.stream()
-                    .map(championMapper::toDTO)
-                    .collect(Collectors.toList());
+            Page<Champion> champions = championRepository.findAll(pageable);
+            logger.info("Se han encontrado {} habilidades.", champions.getNumberOfElements());
+            return champions.map(championMapper::toDTO);
         } catch (Exception e) {
-            logger.error("Error al obtener la lista de campeones: {}", e.getMessage());
+            logger.error("Error al obtener la lista de habilidades: {}", e.getMessage());
             throw e;
         }
     }

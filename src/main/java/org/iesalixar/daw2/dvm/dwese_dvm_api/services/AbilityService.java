@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,14 +36,12 @@ public class AbilityService {
     @Autowired
     private MessageSource messageSource;
 
-    public List<AbilityDTO> getAllAbilities() {
-        logger.info("Solicitando todas las habilidades...");
+    public Page<AbilityDTO> getAllAbilities(Pageable pageable) {
+        logger.info("Solicitando todas las habilidades...", pageable.getPageNumber(), pageable.getPageSize());
         try {
-            List<Ability> abilities = abilityRepository.findAll();
-            logger.info("Se han encontrado {} habilidades.", abilities.size());
-            return abilities.stream()
-                    .map(abilityMapper::toDTO)
-                    .collect(Collectors.toList());
+            Page<Ability> abilities = abilityRepository.findAll(pageable);
+            logger.info("Se han encontrado {} habilidades.", abilities.getNumberOfElements());
+            return abilities.map(abilityMapper::toDTO);
         } catch (Exception e) {
             logger.error("Error al obtener la lista de habilidades: {}", e.getMessage());
             throw e;
